@@ -83,7 +83,7 @@
                 :data-src="getItemSrc(itemIndex)"
                 :data-srcset="getItemSrcSet(itemIndex)"
                 :data-sizes="getItemSizes(itemIndex)"
-                :key="itemIndex"
+                :key="'img-' + itemIndex"
                 draggable="false"
                 :alt="getItemAlt(itemIndex)"
 
@@ -98,7 +98,7 @@
                 @touchmove="handleMouseMove($event)"
                 @touchend="handleMouseUp($event)"
                 />
-              <picture :key="itemIndex" v-else>
+              <picture :key="'picture-' + itemIndex" v-else>
                 <source
                     v-for="(source, sourceIndex) in getPictureSources(itemIndex)"
                     :data-srcset="source.srcset"
@@ -240,7 +240,7 @@
               <!--/imgs-slide-->
 
               <div v-else key="video" class="cool-lightbox__iframe">
-                <transition name="cool-lightbox-slide-change" mode="out-in">
+                <transition-group name="cool-lightbox-slide-change" mode="out-in">
                   <iframe
                     class="cool-lightbox-video"
                     v-autoplayObserver
@@ -274,7 +274,7 @@
                     <source :src="checkIsMp4(getItemSrc(imgIndex))" :type="'video/'+(getVideoExt(getItemSrc(imgIndex)) ? getVideoExt(getItemSrc(imgIndex)) : getExtFromItem(imgIndex))">
                     Sorry, your browser doesn't support embedded videos
                   </video>
-                </transition>
+                </transition-group>
               </div>
               <!--/cool-lightbox__iframe-->
 
@@ -571,7 +571,7 @@ export default {
     zoomBar(newVal, prevVal) {
       let item
       if(this.isZooming) {
-        if(this.effect == 'swipe') {
+        if(this.effect === 'swipe') {
           item = this.$refs.items[this.imgIndex].childNodes[0]
         } else {
           item = this.$refs.items.childNodes[0]
@@ -1397,7 +1397,7 @@ export default {
 
       // item zoom
       let item
-      if(this.effect == 'swipe') {
+      if(this.effect === 'swipe') {
         item = this.$refs.items[this.imgIndex].childNodes[0]
       } else {
         item = this.$refs.items.childNodes[0]
@@ -1454,19 +1454,22 @@ export default {
       if(this.imgIndex != null) {
 
         let item
-        if(this.effect == 'swipe') {
+        if(this.effect === 'swipe') {
           item = this.$refs.items[this.imgIndex].childNodes[0]
         } else {
           item = this.$refs.items.childNodes[0]
         }
 
         // reset styles
-        if(this.disableZoom) {
-          item.style.transform  = 'translate3d(calc(-50% + '+this.left+'px), calc(-50% + '+this.top+'px), 0px)'
-        } else {
-          item.style.transform  = 'translate3d(calc(-50% + '+this.left+'px), calc(-50% + '+this.top+'px), 0px) scale3d(1, 1, 1)'
+        // only for imag
+        if (item.style){
+          if(this.disableZoom) {
+            item.style.transform  = 'translate3d(calc(-50% + '+this.left+'px), calc(-50% + '+this.top+'px), 0px)'
+          } else {
+            item.style.transform  = 'translate3d(calc(-50% + '+this.left+'px), calc(-50% + '+this.top+'px), 0px) scale3d(1, 1, 1)'
+          }
         }
-
+       
         this.initialMouseX = 0
         if(window.innerWidth >= 700) {
           this.buttonsVisible = true
